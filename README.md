@@ -22,9 +22,13 @@ npm run test:e2e   # Desktop, mobile, and saved-document migration tests
 
 Browser tests use `/usr/bin/chromium` by default. Set `CHROMIUM_PATH` to the executable location if Chromium is installed elsewhere. Playwright starts Vite automatically when needed.
 
+## Loan eligibility & policies
+
+The opening question is **“I’m self-employed. What documents would I need for a home loan?”** The examples cover product-specific eligibility checks, salaried and self-employed income documents, property and admission records, co-applicants, and processing fees. Example Bank and all thresholds, age limits, fees, and moratorium terms are fictional teaching policies. They are not live lender terms, jurisdiction-specific rules, personalized advice, or a loan approval. The app does not collect applications or make underwriting decisions.
+
 ## The complete workflow
 
-1. **Load documents** — use four included astronomy guides covering the solar system, the Moon, telescopes, and stargazing, paste your own text, or import `.txt` / `.md` files up to 200 KB.
+1. **Load documents** — use four fictional Example Bank guides covering home loans, personal loans, education loans, and fees and application documents, paste your own text, or import `.txt` / `.md` files up to 200 KB.
 2. **Parse and clean** — normalize text and strip basic Markdown and HTML formatting.
 3. **Chunk** — split documents into overlapping word windows. Tune size and overlap to explore context tradeoffs.
 4. **Embed** — inspect 96-dimensional deterministic vectors and their heatmap.
@@ -41,16 +45,24 @@ Click any pipeline stage for its explanation, input/output contract, and **Inspe
 
 ## Explore
 
-- **Playground:** run questions, follow the animation, inspect answers, retrieved passages, prompts, and the execution trace; copy answers and prompts or export the complete run as JSON.
-- **Knowledge base:** add, inspect, and remove documents; preview chunks and vectors; restore missing sample documents without deleting custom ones.
+- **Playground:** run questions at your chosen pace, pause/resume or advance one step, inspect answers, retrieved passages, prompts, and the execution trace; copy answers and prompts or export the complete run as JSON.
+- **Knowledge base:** add, edit, inspect, and remove documents; preview chunks and vectors; restore missing sample documents without deleting custom ones.
 - **Experiments:** tune chunk size, overlap, top K, vector/keyword balance, and reranking. Inspect the last 20 runs from the current session.
 - **Learning guide:** explanations and production considerations for all twelve stages.
 
-Documents and configuration persist in browser local storage. Older built-in employee-handbook examples are replaced with astronomy guides on the next visit, while custom uploaded documents are preserved. Run history is session-only. Assets and fonts are bundled locally; application data is never sent to an external service. Exported run files include source content.
+Documents, edits, configuration, and animation speed persist in browser local storage. Editing keeps the source ID and updates its chunks and vectors automatically; run the question again to refresh an earlier answer. Older built-in workplace and astronomy examples are replaced with loan-policy guides on the next visit, while custom uploaded documents are preserved. Run history is session-only. Assets and fonts are bundled locally; application data is never sent to an external service. Exported run files include source content.
+
+## Recording a walkthrough
+
+The default **Presentation** pace holds each of the 12 steps for **2 seconds**, for a roughly 24-second walkthrough. **Walkthrough** uses 1 second per step, and **Quick** uses 0.25 seconds per step. Choose the pace with **Animation speed** above the graph; it can be changed before or during a run.
+
+Click **Pause** to hold a step while explaining it, **Resume** to continue, or **Next step** to advance once and remain paused. **Reset simulation** cancels the current walkthrough. Expanding the pipeline gives more space for a recording. The pace controls the visual explanation only; it does not add delay to the underlying retrieval computation. Each run captures the question, configuration, and source content when it starts; edits apply to the next run.
+
+Use **Manage documents** from the playground or open **Knowledge base**. Each source has an **Edit** pencil button, and its inspection dialog also has **Edit document**. Change the title and text or upload a replacement `.txt` / `.md` file, then **Save document changes**. **Add document** opens a fresh editor for a new source. These browser changes are local to your browser, not uploaded to GitHub or shared with other visitors.
 
 ## What is simulated?
 
-Parsing, chunking, BM25 scoring, cosine similarity, candidate selection, context construction, and source citations run locally. The embedding is a normalized feature hash with a small synonym map, **not a trained neural embedding model**. Reranking uses a transparent heuristic, **not a cross-encoder**. Generation selects source sentences, **not an LLM**. Chunk limits count whitespace-separated words, not model tokens.
+Parsing, chunking, BM25 scoring, cosine similarity, candidate selection, context construction, and source citations run locally. The embedding is a normalized feature hash with a small synonym map, **not a trained neural embedding model**. Reranking uses a transparent heuristic, **not a cross-encoder**. Generation selects complete source sentences, **not an LLM**. For questions naming one loan product, statements explicitly about another product are omitted from the answer; retrieved candidates remain visible for inspection. Chunk limits count whitespace-separated words, not model tokens.
 
 The walkthrough animation is illustrative; its duration is not a latency measurement. The reported compute time measures local computation. Query-term coverage is an overlap signal, not an accuracy or faithfulness score. Hash collisions, missing synonyms, fragmented chunks, conflicting sources, and ambiguous questions can produce imperfect retrieval or incomplete answers—inspect the evidence rather than treating the scores as guarantees.
 

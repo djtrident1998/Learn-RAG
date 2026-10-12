@@ -24,6 +24,8 @@ import {
   Maximize2,
   MessageSquareText,
   PanelLeftClose,
+  Pause,
+  Pencil,
   Play,
   Plus,
   RotateCcw,
@@ -33,6 +35,7 @@ import {
   SlidersHorizontal,
   Sparkles,
   Split,
+  StepForward,
   Trash2,
   Upload,
   Workflow,
@@ -69,6 +72,18 @@ const icons = [
 ];
 type Page = "playground" | "knowledge" | "experiments" | "guide";
 type Tab = "answer" | "retrieval" | "prompt" | "trace";
+const playbackSpeeds = {
+  quick: { delay: 250, label: "Quick · 0.25 s / step" },
+  walkthrough: { delay: 1000, label: "Walkthrough · 1 s / step" },
+  presentation: { delay: 2000, label: "Presentation · 2 s / step" },
+};
+type PlaybackSpeed = keyof typeof playbackSpeeds;
+function loadPlaybackSpeed(): PlaybackSpeed {
+  const value = stored<unknown>("rag-playback-speed", "presentation");
+  return typeof value === "string" && Object.hasOwn(playbackSpeeds, value)
+    ? (value as PlaybackSpeed)
+    : "presentation";
+}
 function stored<T>(key: string, fallback: T): T {
   try {
     return JSON.parse(localStorage.getItem(key) ?? "null") ?? fallback;
@@ -92,11 +107,15 @@ function App() {
   const [history, setHistory] = useState<Run[]>([]);
   const [selected, setSelected] = useState(2);
   const [running, setRunning] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] =
+    useState<PlaybackSpeed>(loadPlaybackSpeed);
   const [progress, setProgress] = useState(-1);
   const [tab, setTab] = useState<Tab>("answer");
   const [settings, setSettings] = useState(false);
   const [inspecting, setInspecting] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [documentView, setDocumentView] = useState<KnowledgeDocument | null>(
     null,
@@ -108,6 +127,7 @@ function App() {
   const [formError, setFormError] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingRun = useRef<Run | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const queryRef = useRef<HTMLTextAreaElement>(null);
@@ -120,12 +140,13 @@ function App() {
     try {
       localStorage.setItem("rag-documents", JSON.stringify(documents));
       localStorage.setItem("rag-config", JSON.stringify(config));
+      localStorage.setItem("rag-playback-speed", JSON.stringify(playbackSpeed));
     } catch {
       setToast(
         "Browser storage is full. Changes are available for this session.",
       );
     }
-  }, [documents, config]);
+  }, [documents, config, playbackSpeed]);
   useEffect(
     () => () => {
       if (timer.current) clearTimeout(timer.current);
@@ -169,34 +190,52 @@ function App() {
   function startRun() {
     if (running || !query.trim() || !documents.some((d) => d.text.trim()))
       return;
-    const result = simulate(documents, query.trim(), config);
+    pendingRun.current = simulate(documents, query.trim(), config);
     setRunning(true);
+    setPaused(false);
     setProgress(0);
     setSelected(0);
     setRun(null);
     setTab("answer");
     setCitation(null);
-    let step = 0;
-    const advance = () => {
-      step++;
-      if (step < stages.length) {
-        setProgress(step);
-        setSelected(step);
-        timer.current = setTimeout(advance, 210);
-      } else {
-        setRun(result);
-        setHistory((h) => [result, ...h].slice(0, 20));
-        setRunning(false);
-        setProgress(stages.length);
-        notify("Run complete. Follow the citations to explore the evidence.");
-      }
-    };
-    timer.current = setTimeout(advance, 210);
+  }
+  function advanceRun() {
+    if (!running || !pendingRun.current) return;
+    const step = progress + 1;
+    if (step < stages.length) {
+      setProgress(step);
+      setSelected(step);
+      return;
+    }
+    const result = pendingRun.current;
+    pendingRun.current = null;
+    setRun(result);
+    setHistory((h) => [result, ...h].slice(0, 20));
+    setRunning(false);
+    setPaused(false);
+    setProgress(stages.length);
+    notify("Run complete. Follow the citations to explore the evidence.");
+  }
+  useEffect(() => {
+    if (!running || paused) return;
+    const scheduled = setTimeout(
+      advanceRun,
+      playbackSpeeds[playbackSpeed].delay,
+    );
+    timer.current = scheduled;
+    return () => clearTimeout(scheduled);
+  }, [running, paused, progress, playbackSpeed]);
+  function stepRun() {
+    if (!running) return;
+    setPaused(true);
+    advanceRun();
   }
   function resetRun() {
     if (timer.current) clearTimeout(timer.current);
+    pendingRun.current = null;
     setRun(null);
     setRunning(false);
+    setPaused(false);
     setProgress(-1);
     setSelected(2);
     setCitation(null);
@@ -205,7 +244,15 @@ function App() {
     setPage(next);
     setSidebarOpen(false);
   }
-  function addDocument() {
+  function openDocumentEditor(document?: KnowledgeDocument) {
+    setEditingId(document?.id ?? null);
+    setTitle(document?.title ?? "");
+    setBody(document?.text ?? "");
+    setFormError("");
+    setDocumentView(null);
+    setAdding(true);
+  }
+  function saveDocument() {
     if (!title.trim() || !body.trim()) {
       setFormError("Add a document title and some source text.");
       return;
@@ -214,20 +261,32 @@ function App() {
       setFormError("Please keep each document below 200,000 characters.");
       return;
     }
-    setDocuments((d) => [
-      ...d,
-      {
-        id: crypto.randomUUID(),
-        title: title.trim(),
-        text: body.trim(),
-        category: "Your documents",
-      },
-    ]);
+    if (editingId) {
+      setDocuments((current) =>
+        current.map((document) =>
+          document.id === editingId
+            ? { ...document, title: title.trim(), text: body.trim() }
+            : document,
+        ),
+      );
+      notify("Document updated. Run again to use the latest knowledge.");
+    } else {
+      setDocuments((current) => [
+        ...current,
+        {
+          id: crypto.randomUUID(),
+          title: title.trim(),
+          text: body.trim(),
+          category: "Your documents",
+        },
+      ]);
+      notify("Document added to your knowledge base.");
+    }
     setAdding(false);
+    setEditingId(null);
     setTitle("");
     setBody("");
     setFormError("");
-    notify("Document added to your knowledge base.");
   }
   async function importFile(file?: File) {
     if (!file) return;
@@ -516,18 +575,30 @@ function App() {
               <div className="page-heading">
                 <div>
                   <div className="eyebrow">
-                    <span /> UNDERSTAND THE MAGIC
+                    <span /> LOAN ELIGIBILITY & POLICIES
                   </div>
                   <h1>
                     From knowledge to answers<span>.</span>
                   </h1>
                   <p>
-                    Explore retrieval-augmented generation, one step at a time.
+                    Explore eligibility, fees, and required documents, one RAG
+                    step at a time.
                   </p>
                 </div>
-                <button className="secondary" onClick={() => setSettings(true)}>
-                  <Settings2 size={16} /> Configure pipeline
-                </button>
+                <div className="page-heading-actions">
+                  <button
+                    className="secondary"
+                    onClick={() => navigate("knowledge")}
+                  >
+                    <Database size={16} /> Manage documents
+                  </button>
+                  <button
+                    className="secondary"
+                    onClick={() => setSettings(true)}
+                  >
+                    <Settings2 size={16} /> Configure pipeline
+                  </button>
+                </div>
               </div>
               <section className="query-panel" aria-label="Ask a question">
                 <div className="query-top">
@@ -538,8 +609,8 @@ function App() {
                     <div>
                       <h2>It starts with a question</h2>
                       <p>
-                        Ask your knowledge base anything. Watch the pipeline do
-                        its thing.
+                        Ask the fictional lender’s guides. See exactly where
+                        each answer comes from.
                       </p>
                     </div>
                   </div>
@@ -552,7 +623,7 @@ function App() {
                   <textarea
                     ref={queryRef}
                     aria-label="Your question"
-                    rows={1}
+                    rows={2}
                     value={query}
                     maxLength={1000}
                     placeholder="What would you like to know?"
@@ -572,14 +643,27 @@ function App() {
                     }
                   >
                     {running ? (
-                      <LoaderCircle size={16} className="spin" />
+                      paused ? (
+                        <Pause size={16} />
+                      ) : (
+                        <LoaderCircle size={16} className="spin" />
+                      )
                     ) : (
                       <Play size={15} fill="currentColor" />
                     )}
-                    {running ? "Running pipeline…" : "Run simulation"}
+                    {running
+                      ? paused
+                        ? "Simulation paused"
+                        : "Running pipeline…"
+                      : "Run simulation"}
                     {!running && <span>⌘ ↵</span>}
                   </button>
                 </div>
+                <p className="loan-demo-note">
+                  <ShieldCheck size={13} /> Example Bank is fictional. These
+                  policies illustrate RAG; they are not live lender terms or an
+                  eligibility decision.
+                </p>
                 <div className="query-suggestions">
                   <span>TRY A QUESTION</span>
                   {sampleQuestionLabels.map((label, i) => (
@@ -603,9 +687,11 @@ function App() {
                     </div>
                     <div className="panel-tools">
                       <span className="live-label">
-                        <span className={running ? "pulsing" : ""} />
+                        <span className={running && !paused ? "pulsing" : ""} />
                         {running
-                          ? "SIMULATING"
+                          ? paused
+                            ? "PAUSED"
+                            : "SIMULATING"
                           : run
                             ? "RUN COMPLETE"
                             : "READY TO EXPLORE"}
@@ -630,6 +716,78 @@ function App() {
                       >
                         {expanded ? <X size={16} /> : <Maximize2 size={15} />}
                       </button>
+                    </div>
+                  </div>
+                  <div className="playback-bar">
+                    <div className="playback-current" aria-live="polite">
+                      <span className="playback-step-number">
+                        {progress < 0
+                          ? "–"
+                          : `${String(Math.min(progress + 1, 12)).padStart(2, "0")}/12`}
+                      </span>
+                      <div>
+                        <strong className="playback-step-name">
+                          {running
+                            ? stages[progress].title
+                            : run
+                              ? "Walkthrough complete"
+                              : "Ready for your walkthrough"}
+                        </strong>
+                        <span>
+                          {running
+                            ? paused
+                              ? "Paused · take a closer look"
+                              : "Watch each step unfold"
+                            : "Slow down, pause, or advance one step at a time"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="playback-controls">
+                      <div className="playback-speed">
+                        <label htmlFor="playback-speed">Animation speed</label>
+                        <select
+                          id="playback-speed"
+                          value={playbackSpeed}
+                          onChange={(e) =>
+                            setPlaybackSpeed(e.target.value as PlaybackSpeed)
+                          }
+                        >
+                          {Object.entries(playbackSpeeds).map(
+                            ([value, speed]) => (
+                              <option key={value} value={value}>
+                                {speed.label}
+                              </option>
+                            ),
+                          )}
+                        </select>
+                      </div>
+                      <button
+                        className="secondary playback-button"
+                        disabled={!running}
+                        aria-label={
+                          paused ? "Resume simulation" : "Pause simulation"
+                        }
+                        onClick={() => setPaused((value) => !value)}
+                      >
+                        {paused ? <Play size={14} /> : <Pause size={14} />}
+                        <span>{paused ? "Resume" : "Pause"}</span>
+                      </button>
+                      <button
+                        className="secondary playback-button"
+                        disabled={!running}
+                        aria-label="Next pipeline step"
+                        onClick={stepRun}
+                      >
+                        <StepForward size={14} />
+                        <span>Next step</span>
+                      </button>
+                    </div>
+                    <div className="playback-progress">
+                      <i
+                        style={{
+                          width: `${(Math.max(0, Math.min(progress + 1, 12)) / 12) * 100}%`,
+                        }}
+                      />
                     </div>
                   </div>
                   <div className="pipeline-canvas">
@@ -700,7 +858,7 @@ function App() {
                             <button
                               key={stage.id}
                               style={{ gridColumn: column, gridRow: row }}
-                              className={`flow-node ${stage.color} ${selected === index ? "selected" : ""} ${running && progress === index ? "processing" : ""} ${complete ? "complete" : ""}`}
+                              className={`flow-node ${stage.color} ${selected === index ? "selected" : ""} ${running && progress === index ? (paused ? "processing is-paused" : "processing") : ""} ${complete ? "complete" : ""}`}
                               onClick={() => setSelected(index)}
                               aria-label={`Step ${index + 1}: ${stage.title}`}
                               aria-pressed={selected === index}
@@ -946,19 +1104,21 @@ function App() {
                 {!run ? (
                   <div className="empty-result">
                     <span
-                      className={`empty-icon ${running ? "spin-slow" : ""}`}
+                      className={`empty-icon ${running && !paused ? "spin-slow" : ""}`}
                     >
                       <Sparkles size={25} />
                     </span>
                     <div>
                       <h3>
                         {running
-                          ? `${stages[Math.min(progress, 11)].title}…`
+                          ? `${paused ? "Paused · " : ""}${stages[Math.min(progress, 11)].title}${paused ? "" : "…"}`
                           : "Your next aha moment starts here."}
                       </h3>
                       <p>
                         {running
-                          ? "Follow the highlighted step as your question travels through the pipeline."
+                          ? paused
+                            ? "Take your time inspecting the evidence, then resume or advance one step."
+                            : "Follow the highlighted step as your question travels through the pipeline."
                           : "Run the simulation to see an answer, its sources, and every step behind it."}
                       </p>
                     </div>
@@ -1198,10 +1358,7 @@ function App() {
                 </div>
                 <button
                   className="primary"
-                  onClick={() => {
-                    setAdding(true);
-                    setFormError("");
-                  }}
+                  onClick={() => openDocumentEditor()}
                 >
                   <Plus size={16} /> Add document
                 </button>
@@ -1265,20 +1422,30 @@ function App() {
                       >
                         <FileText size={24} />
                       </span>
-                      <button
-                        className="icon-button delete-button"
-                        aria-label={`Delete ${doc.title}`}
-                        onClick={() => {
-                          setDocuments((d) =>
-                            d.filter((item) => item.id !== doc.id),
-                          );
-                          notify(
-                            "Document removed. Restore samples or add it again anytime.",
-                          );
-                        }}
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="document-actions">
+                        <button
+                          className="icon-button"
+                          aria-label={`Edit ${doc.title}`}
+                          title="Edit document"
+                          onClick={() => openDocumentEditor(doc)}
+                        >
+                          <Pencil size={16} />
+                        </button>
+                        <button
+                          className="icon-button delete-button"
+                          aria-label={`Delete ${doc.title}`}
+                          onClick={() => {
+                            setDocuments((d) =>
+                              d.filter((item) => item.id !== doc.id),
+                            );
+                            notify(
+                              "Document removed. Restore samples or add it again anytime.",
+                            );
+                          }}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
                     <span className="document-category">{doc.category}</span>
                     <h3>{doc.title}</h3>
@@ -1300,10 +1467,7 @@ function App() {
                 ))}
                 <button
                   className="add-document-card"
-                  onClick={() => {
-                    setAdding(true);
-                    setFormError("");
-                  }}
+                  onClick={() => openDocumentEditor()}
                 >
                   <span>
                     <Plus size={25} />
@@ -1317,7 +1481,7 @@ function App() {
                 <div>
                   <strong>Try changing the source of truth.</strong>
                   <p>
-                    Add a document about a new space topic, then ask about it in
+                    Add a document about a new loan policy, then ask about it in
                     the playground. Watch how the evidence changes the answer.
                   </p>
                 </div>
@@ -1372,6 +1536,7 @@ function App() {
                           className="history-card"
                           key={r.id}
                           onClick={() => {
+                            resetRun();
                             setRun(r);
                             setQuery(r.query);
                             setConfig(r.config);
@@ -1846,7 +2011,7 @@ function App() {
       )}
       {adding && (
         <Modal
-          title="Add a little knowledge"
+          title={editingId ? "Edit your knowledge" : "Add a little knowledge"}
           subtitle="Your documents are stored only in this browser."
           onClose={() => setAdding(false)}
         >
@@ -1855,7 +2020,11 @@ function App() {
             onClick={() => fileRef.current?.click()}
           >
             <Upload size={23} />
-            <strong>Choose a text or Markdown file</strong>
+            <strong>
+              {editingId
+                ? "Replace content with a text or Markdown file"
+                : "Choose a text or Markdown file"}
+            </strong>
             <span>.txt, .md · up to 200 KB</span>
           </button>
           <input
@@ -1881,7 +2050,7 @@ function App() {
             className="form-input"
             value={title}
             maxLength={120}
-            placeholder="e.g. The rings of Saturn"
+            placeholder="e.g. Home loan document checklist"
             onChange={(e) => setTitle(e.target.value)}
           />
           <label className="form-label" htmlFor="document-body">
@@ -1900,8 +2069,9 @@ function App() {
               {formError}
             </p>
           )}
-          <button className="primary full" onClick={addDocument}>
-            <Plus size={16} /> Add to knowledge base
+          <button className="primary full" onClick={saveDocument}>
+            {editingId ? <Check size={16} /> : <Plus size={16} />}
+            {editingId ? "Save document changes" : "Add to knowledge base"}
           </button>
         </Modal>
       )}
@@ -1912,6 +2082,14 @@ function App() {
           onClose={() => setDocumentView(null)}
           wide
         >
+          <div className="document-preview-toolbar">
+            <button
+              className="secondary"
+              onClick={() => openDocumentEditor(documentView)}
+            >
+              <Pencil size={15} /> Edit document
+            </button>
+          </div>
           <div className="document-preview">
             {parseDocument(documentView.text)}
           </div>

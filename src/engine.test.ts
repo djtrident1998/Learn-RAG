@@ -54,19 +54,34 @@ describe("document preparation", () => {
 });
 describe("embeddings and retrieval", () => {
   it("creates deterministic, normalized vectors and handles empty queries", () => {
-    expect(embed("lunar phases")).toEqual(embed("lunar phases"));
-    expect(cosine(embed("lunar phases"), embed("lunar phases"))).toBeCloseTo(1);
+    expect(embed("mortgage documents")).toEqual(embed("mortgage documents"));
+    expect(
+      cosine(embed("mortgage documents"), embed("mortgage documents")),
+    ).toBeCloseTo(1);
     expect(embed("")).toEqual(new Array(96).fill(0));
-    expect(cosine(embed("moon phase"), embed("lunar phases"))).toBeCloseTo(1);
+    expect(
+      cosine(embed("housing paperwork"), embed("mortgage documents")),
+    ).toBeCloseTo(1);
   });
-  it("retrieves telescope aperture information and cites actual source passages", () => {
+  it("retrieves self-employed home loan documents and cites actual source passages", () => {
     const run = simulate(
       demoDocuments,
-      "What does a telescope's aperture tell us?",
+      "I’m self-employed. What documents would I need for a home loan?",
       defaultConfig,
     );
-    expect(run.ranked[0].documentId).toBe("telescopes");
-    expect(run.answer).toContain("diameter");
+    expect(run.ranked.some((chunk) => chunk.documentId === "home-loan")).toBe(
+      true,
+    );
+    for (const requirement of [
+      "identity proof",
+      "address proof",
+      "business registration",
+      "two years of tax returns",
+      "business financial statements",
+      "six months of business bank statements",
+      "sale agreement",
+    ])
+      expect(run.answer).toContain(requirement);
     expect(run.grounded).toBe(true);
     expect(run.ranked).toHaveLength(3);
     for (const paragraph of run.answer.split("\n\n")) {
@@ -77,16 +92,67 @@ describe("embeddings and retrieval", () => {
       );
     }
   });
-  it("keeps decimal measurements intact when extracting source sentences", () => {
+  it("keeps decimal percentages intact when extracting source sentences", () => {
     const text =
-      "Earth's axis tilts 23.4 degrees, and its orbit takes about 365.25 days.";
+      "The fictional processing fee is 0.5% and the example interest rate is 8.25%.";
     const run = simulate(
-      [{ id: "facts", title: "Earth facts", category: "Astronomy", text }],
-      "How many degrees does Earth's axis tilt?",
+      [{ id: "facts", title: "Demo fees", category: "Loan policies", text }],
+      "What is the fictional processing fee?",
       defaultConfig,
     );
     expect(run.answer).toContain(text);
     expect(run.answer).toContain("[1]");
+  });
+  it("retrieves education documents without applying home-loan requirements", () => {
+    const run = simulate(
+      demoDocuments,
+      "What documents are required for an education loan?",
+      defaultConfig,
+    );
+    expect(run.ranked[0].documentId).toBe("education-loan");
+    for (const requirement of [
+      "admission letter",
+      "fee schedule",
+      "academic records",
+      "co-applicants supply income proof",
+    ])
+      expect(run.answer).toContain(requirement);
+    expect(run.answer).not.toContain("Home loan property documents");
+    expect(run.answer).not.toContain("sale agreement");
+  });
+  it("answers personal-loan eligibility using the matching product", () => {
+    const run = simulate(
+      demoDocuments,
+      "What are the eligibility criteria for a personal loan?",
+      defaultConfig,
+    );
+    expect(run.ranked[0].documentId).toBe("personal-loan");
+    expect(run.answer).toContain("at least 21");
+    expect(run.answer).toContain("age 60");
+    expect(run.answer).toContain("consistent income");
+    expect(run.answer).not.toContain("65");
+  });
+  it("compares all three fictional processing fees without dropping decimals", () => {
+    const run = simulate(
+      demoDocuments,
+      "How do processing fees differ across home, personal, and education loans?",
+      defaultConfig,
+    );
+    expect(run.ranked[0].documentId).toBe("loan-fees");
+    for (const fee of ["0.5%", "1.5%", "0.25%"])
+      expect(run.answer).toContain(fee);
+    expect(run.answer).toContain("fictional");
+  });
+  it("never turns a fragment at a chunk boundary into an answer", () => {
+    const text =
+      Array.from({ length: 45 }, (_, index) => `word${index}`).join(" ") + ".";
+    const run = simulate(
+      [{ id: "long", title: "Incomplete context", category: "Test", text }],
+      "word15",
+      { ...defaultConfig, chunkSize: 20, overlap: 0 },
+    );
+    expect(run.retrieved.length).toBeGreaterThan(0);
+    expect(run.grounded).toBe(false);
   });
   it("uses newly supplied knowledge without external services", () => {
     const run = simulate(
@@ -95,17 +161,17 @@ describe("embeddings and retrieval", () => {
           id: "product",
           title: "Product guide",
           category: "Test",
-          text: "The Aurora telescope costs $849 and includes a two-year warranty. Aurora ships in a protective travel case.",
+          text: "The fictional express document review costs 849 units and includes identity verification. The review is completed only after a full application is received.",
         },
       ],
-      "How much does the Aurora telescope cost?",
+      "How much does express document review cost?",
       defaultConfig,
     );
-    expect(run.answer).toContain("$849");
+    expect(run.answer).toContain("849 units");
     expect(run.citations[0].title).toBe("Product guide");
   });
   it("keeps initial order when reranking is disabled and obeys top K", () => {
-    const run = simulate(demoDocuments, "lunar phases", {
+    const run = simulate(demoDocuments, "mortgage documents", {
       ...defaultConfig,
       rerank: false,
       topK: 2,
@@ -121,7 +187,7 @@ describe("embeddings and retrieval", () => {
   });
   it("handles empty knowledge and stopword-only queries", () => {
     for (const run of [
-      simulate([], "What causes Moon phases?", defaultConfig),
+      simulate([], "What documents are needed for a home loan?", defaultConfig),
       simulate(demoDocuments, "the and is", defaultConfig),
     ]) {
       expect(run.grounded).toBe(false);
@@ -132,7 +198,7 @@ describe("embeddings and retrieval", () => {
   it("assembles a grounded prompt with exact numbered passages", () => {
     const run = simulate(
       demoDocuments,
-      "What causes the seasons on Earth?",
+      "What documents are required for an education loan?",
       defaultConfig,
     );
     expect(run.prompt).toContain(
