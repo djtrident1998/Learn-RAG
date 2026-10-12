@@ -169,8 +169,13 @@ export const stages = [
   },
 ] as const;
 export const sampleQuestions = [
-  "How does our remote work policy support employees?",
-  "What is the home office allowance?",
-  "What should I do in my first week?",
-  "How do I keep company data secure?",
+  "Why does the Moon appear to change shape?",
+  "What does a telescope's aperture tell us?",
+  "How should I prepare for my first night stargazing?",
+  "What causes the seasons on Earth?",
+];
+export const sampleQuestionLabels = [
+  "Moon phases",
+  "Choosing a telescope",
+  "First night stargazing",
 ];

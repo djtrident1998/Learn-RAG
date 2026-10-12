@@ -50,28 +50,60 @@ export const defaultConfig: Config = {
 };
 export const demoDocuments: KnowledgeDocument[] = [
   {
-    id: "remote",
-    title: "Remote work handbook",
-    category: "People & culture",
-    text: `Orbit is a remote-first company. Employees can work from anywhere within their country of employment. Our remote work policy is designed to give people flexibility while keeping teams connected.\n\nFlexible schedules allow employees to choose their working hours. Teams share four core collaboration hours, from 10 am to 2 pm in their team's agreed time zone. Outside these hours, employees can arrange work around personal commitments.\n\nEvery employee receives a $1,000 home office allowance for a desk, chair, monitor, and other equipment. Orbit also reimburses up to $75 per month for home internet. Employees can request equipment through the People team.\n\nRemote employees can use a coworking space up to five days per month, reimbursed up to $200. Quarterly team gatherings help colleagues build relationships. Travel and accommodation for approved team gatherings are covered by Orbit.\n\nWe encourage asynchronous communication and document decisions in shared workspaces. Employees should update their availability in the team calendar. Managers hold weekly one-on-one check-ins to support wellbeing and remove obstacles.\n\nEmployees who want to work from another country must request approval from People Operations at least 30 days in advance. International remote work is limited to 20 working days per year, subject to local legal and tax requirements.`,
+    id: "solar-system",
+    title: "A tour of the solar system",
+    category: "Space & planets",
+    text: `The solar system contains the Sun, eight planets, their moons, dwarf planets, asteroids, and comets. The Sun is a star, and its gravity keeps these objects in orbit. The eight planets, in order from the Sun, are Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune.
+
+Mercury is the closest planet to the Sun, while Jupiter is the largest planet in the solar system. Mercury, Venus, Earth, and Mars are rocky terrestrial planets with solid surfaces. Jupiter and Saturn are gas giants; Uranus and Neptune are ice giants. Pluto is classified as a dwarf planet.
+
+A planet's rotation is its spin around its axis, which determines the length of its day. A planet's revolution is its journey around the Sun, which determines the length of its year. Earth takes about 24 hours to rotate and about 365.25 days to orbit the Sun.
+
+Earth's seasons are caused by the tilt of its axis, about 23.4 degrees, as it orbits the Sun. They are not caused by Earth moving much closer to or farther from the Sun. When a hemisphere tilts toward the Sun, it receives more direct sunlight and longer days.
+
+Planets shine mainly by reflecting sunlight, while stars produce their own light. Most asteroids orbit in a belt between Mars and Jupiter. Comets contain ice and dust; when a comet approaches the Sun, heating can create a glowing coma and tails.`,
   },
   {
-    id: "benefits",
-    title: "Benefits & wellbeing",
-    category: "People & culture",
-    text: `Orbit offers comprehensive health, dental, and vision insurance to all full-time employees. Coverage starts on the first day of employment. Eligible dependents may be added during onboarding or the annual enrollment period.\n\nEmployees receive 25 days of paid time off per year, in addition to local public holidays. Unused vacation days can carry over up to a maximum of five days. Leave requests should be submitted through the People portal at least two weeks in advance.\n\nOur wellbeing program includes a $50 monthly fitness reimbursement and six confidential counseling sessions per year. Remote employees have access to virtual wellness workshops and a monthly no-meeting afternoon.\n\nEach employee has an annual learning budget of $1,500 for courses, conferences, and professional development. Discuss your learning goals with your manager before making a purchase. The budget renews every January and does not roll over.`,
+    id: "moon",
+    title: "The Moon and its phases",
+    category: "Our cosmic neighbor",
+    text: `The Moon appears to change shape because, as it orbits Earth, we see different portions of its sunlit half. The Moon reflects sunlight rather than making its own light. These changing views are called lunar phases. The Moon's actual shape does not change during a phase cycle.
+
+The lunar phase cycle lasts about 29.5 days, from one new moon to the next. The main phases are new moon, waxing crescent, first quarter, waxing gibbous, full moon, waning gibbous, last quarter, and waning crescent. Waxing means the illuminated portion we see is growing; waning means it is shrinking.
+
+At new moon, the Moon is near the Sun's direction in our sky, and its sunlit side faces mostly away from Earth. At full moon, Earth is between the Sun and Moon, and we see most of the illuminated side. A quarter moon appears half illuminated, despite its name.
+
+Ordinary Moon phases are not caused by Earth's shadow. A lunar eclipse happens when Earth casts its shadow on the Moon near full moon. A solar eclipse happens when the Moon passes between Earth and the Sun near new moon. Eclipses do not happen every month because the Moon's orbit is tilted relative to Earth's orbital plane.
+
+The Moon's gravity is the main driver of ocean tides, with the Sun also contributing. Observers can often see lunar craters with binoculars. The boundary between lunar day and night, called the terminator, makes surface shadows especially noticeable.`,
   },
   {
-    id: "onboarding",
-    title: "Your first 30 days",
-    category: "Getting started",
-    text: `Welcome to Orbit. Before your first day, People Operations will send your employment documents and an onboarding checklist. The IT team ships your laptop and security key to your home address.\n\nOn day one, join a welcome call with your manager and meet your onboarding buddy. Set up your company email, messaging account, and password manager. Review the remote work handbook and book an introductory meeting with People Operations.\n\nDuring your first week, complete security training and meet your immediate team. Your manager will share your role expectations and initial projects. Schedule short introduction calls with colleagues in related teams.\n\nBy day 30, you and your manager will review your onboarding progress, agree on goals for the next quarter, and discuss any support you need. Your onboarding buddy is available throughout your first month to answer questions.`,
+    id: "telescopes",
+    title: "Telescopes and binoculars",
+    category: "Tools for exploring",
+    text: `A telescope's aperture is the diameter of its main light-collecting lens or mirror. A larger aperture gathers more light and can resolve finer details, although atmospheric turbulence also limits what you can see. Aperture is a more useful starting point for choosing a telescope than advertised magnification alone.
+
+Refracting telescopes use lenses to focus light. Reflecting telescopes use mirrors. A Dobsonian telescope is a reflector on a simple, stable mount and is a popular choice for beginners who want to explore the Moon and planets. A portable telescope that is easy to set up may get used more often than a large, complicated instrument.
+
+Magnification equals the telescope's focal length divided by the eyepiece's focal length. A telescope with a focal length of 900 mm and a 10 mm eyepiece produces 90 times magnification. Higher magnification creates a narrower field of view and can make the image dimmer or reveal atmospheric blur.
+
+Binoculars are a useful first tool for stargazing because they are portable and show a wide field of view. In a binocular specification such as 10x50, the first number is magnification and the second is the objective lens diameter in millimeters. A steady tripod or mount makes prolonged viewing easier.
+
+A stable mount, appropriate eyepieces, and a dark observing location matter as much as the telescope itself. Never point binoculars or a telescope at the Sun without a correctly fitted, purpose-made solar filter on the front of the instrument.`,
   },
   {
-    id: "security",
-    title: "Security essentials",
-    category: "IT & security",
-    text: `Protecting customer data is everyone's responsibility at Orbit. All company devices must use full-disk encryption and automatic screen locking. Use your company password manager to create unique passwords. Multi-factor authentication is mandatory for all work accounts.\n\nWhen working remotely, connect to the company VPN before accessing internal systems. Avoid public Wi-Fi unless you are using the VPN. Keep your operating system and applications updated. Never share company devices with family members or friends.\n\nCustomer information must stay in approved company systems. Do not copy sensitive data to personal cloud storage. Report suspected phishing messages to the security team without clicking links or downloading attachments.\n\nIf you lose a company device or suspect a security incident, contact security immediately through the incident channel. Provide the time of the incident, systems involved, and any relevant details. The security team will guide the response.`,
+    id: "stargazing",
+    title: "Your first night stargazing",
+    category: "Hands-on discovery",
+    text: `For your first night stargazing, choose a clear evening and an observing location with an open view of the sky. Move away from bright streetlights where possible. Check the weather and cloud cover before heading out. A sky map or astronomy app can help you identify visible stars and planets for your location and date.
+
+Allow about 20 to 30 minutes for your eyes to adapt to darkness. Bright white light can interrupt that adaptation, so use a dim red flashlight when reading a map. Keep phone brightness low and avoid shining lights toward other observers. Dress warmly, since standing still outside can feel colder than expected.
+
+Start with the Moon if it is visible, then try bright planets or a recognizable constellation. Binoculars can reveal more stars than the unaided eye. The best targets change with the season, your latitude, the time of night, and local light pollution. You do not need an expensive telescope to begin exploring the night sky.
+
+Constellations are named patterns and officially defined regions of the sky. The stars in a constellation can be very far apart in space, even when they appear close together from Earth. Orion is a recognizable example, with three bright stars forming its belt.
+
+Light pollution reduces the contrast of faint objects against the sky. A dark, moonless night is better for observing faint galaxies and nebulae, while the Moon and bright planets can still be rewarding from a city. Record the date, location, sky conditions, and what you observed in a simple notebook.`,
   },
 ];
 const stopwords = new Set(
@@ -80,34 +112,29 @@ const stopwords = new Set(
   ),
 );
 const synonyms: Record<string, string> = {
-  remotely: "remote",
-  home: "remote",
-  distributed: "remote",
-  flexible: "flexibility",
-  schedules: "schedule",
-  hours: "schedule",
-  benefits: "benefit",
-  allowance: "reimbursement",
-  reimburses: "reimbursement",
-  reimbursed: "reimbursement",
-  budget: "reimbursement",
-  equipment: "office",
-  monitor: "office",
-  chair: "office",
-  desk: "office",
-  employees: "employee",
-  people: "employee",
-  staff: "employee",
-  workers: "employee",
-  wellbeing: "wellness",
-  health: "wellness",
-  vacation: "leave",
-  holidays: "leave",
-  pto: "leave",
-  onboarding: "onboard",
-  training: "learn",
-  learning: "learn",
-  courses: "learn",
+  planets: "planet",
+  worlds: "planet",
+  stars: "star",
+  stellar: "star",
+  lunar: "moon",
+  phases: "phase",
+  cycles: "cycle",
+  telescopes: "telescope",
+  scope: "telescope",
+  scopes: "telescope",
+  diameter: "aperture",
+  mirrors: "mirror",
+  lenses: "lens",
+  binoculars: "binocular",
+  stargazing: "observing",
+  beginners: "beginner",
+  novices: "beginner",
+  constellations: "constellation",
+  rotates: "rotation",
+  rotating: "rotation",
+  spin: "rotation",
+  orbits: "orbit",
+  orbiting: "orbit",
   support: "help",
   supports: "help",
   supported: "help",
@@ -260,16 +287,18 @@ export function simulate(
   const queryTerms = new Set(terms.map(canonical));
   const sentences = ranked
     .flatMap((chunk, index) =>
-      (chunk.text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) ?? []).map((text) => {
-        const words = tokenize(text).map(canonical);
-        const matches = words.filter((w) => queryTerms.has(w)).length;
-        return {
-          text: text.trim(),
-          index,
-          relevance: matches / Math.sqrt(Math.max(words.length, 1)),
-          matches,
-        };
-      }),
+      (chunk.text.match(/(?:[^.!?]|\.(?=\d))+(?:[.!?]+|$)/g) ?? []).map(
+        (text) => {
+          const words = tokenize(text).map(canonical);
+          const matches = words.filter((w) => queryTerms.has(w)).length;
+          return {
+            text: text.trim(),
+            index,
+            relevance: matches / Math.sqrt(Math.max(words.length, 1)),
+            matches,
+          };
+        },
+      ),
     )
     .filter((s) => s.matches > 0 && s.text.split(" ").length >= 5);
   const selected: typeof sentences = [];

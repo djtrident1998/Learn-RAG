@@ -51,7 +51,8 @@ import {
   type KnowledgeDocument,
   type Run,
 } from "./engine";
-import { sampleQuestions, stages } from "./content";
+import { sampleQuestionLabels, sampleQuestions, stages } from "./content";
+import { loadKnowledgeDocuments } from "./knowledgeStorage";
 const icons = [
   FileText,
   Braces,
@@ -75,23 +76,11 @@ function stored<T>(key: string, fallback: T): T {
     return fallback;
   }
 }
-function loadDocuments() {
-  const value = stored<unknown>("rag-documents", demoDocuments);
-  return Array.isArray(value) &&
-    value.every(
-      (d) =>
-        d &&
-        ["id", "title", "text", "category"].every(
-          (k) => typeof d[k] === "string",
-        ),
-    )
-    ? (value as KnowledgeDocument[])
-    : demoDocuments;
-}
 function App() {
   const [page, setPage] = useState<Page>("playground");
-  const [documents, setDocuments] =
-    useState<KnowledgeDocument[]>(loadDocuments);
+  const [documents, setDocuments] = useState<KnowledgeDocument[]>(
+    loadKnowledgeDocuments,
+  );
   const [config, setConfig] = useState<Config>(() =>
     normalizeConfig({
       ...defaultConfig,
@@ -593,11 +582,7 @@ function App() {
                 </div>
                 <div className="query-suggestions">
                   <span>TRY A QUESTION</span>
-                  {[
-                    "Remote work policy",
-                    "Office allowance",
-                    "New employee onboarding",
-                  ].map((label, i) => (
+                  {sampleQuestionLabels.map((label, i) => (
                     <button
                       key={label}
                       onClick={() => setQuery(sampleQuestions[i])}
@@ -1332,8 +1317,8 @@ function App() {
                 <div>
                   <strong>Try changing the source of truth.</strong>
                   <p>
-                    Add a document with a new policy, then ask about it in the
-                    playground. Watch how the evidence changes the answer.
+                    Add a document about a new space topic, then ask about it in
+                    the playground. Watch how the evidence changes the answer.
                   </p>
                 </div>
                 <button
@@ -1896,7 +1881,7 @@ function App() {
             className="form-input"
             value={title}
             maxLength={120}
-            placeholder="e.g. Product launch FAQ"
+            placeholder="e.g. The rings of Saturn"
             onChange={(e) => setTitle(e.target.value)}
           />
           <label className="form-label" htmlFor="document-body">

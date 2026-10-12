@@ -16,15 +16,15 @@ Vite serves the app on port 5173. No API keys, database, or backend are required
 ```sh
 npm run build      # TypeScript validation and production output in dist/
 npm run preview    # Serve the production build
-npm test           # 11 simulation-engine tests
-npm run test:e2e   # 6 Chromium browser tests
+npm test           # Simulation and saved-document migration tests
+npm run test:e2e   # Desktop, mobile, and saved-document migration tests
 ```
 
 Browser tests use `/usr/bin/chromium` by default. Set `CHROMIUM_PATH` to the executable location if Chromium is installed elsewhere. Playwright starts Vite automatically when needed.
 
 ## The complete workflow
 
-1. **Load documents** — use four included Orbit company handbooks, paste your own text, or import `.txt` / `.md` files up to 200 KB.
+1. **Load documents** — use four included astronomy guides covering the solar system, the Moon, telescopes, and stargazing, paste your own text, or import `.txt` / `.md` files up to 200 KB.
 2. **Parse and clean** — normalize text and strip basic Markdown and HTML formatting.
 3. **Chunk** — split documents into overlapping word windows. Tune size and overlap to explore context tradeoffs.
 4. **Embed** — inspect 96-dimensional deterministic vectors and their heatmap.
@@ -46,7 +46,7 @@ Click any pipeline stage for its explanation, input/output contract, and **Inspe
 - **Experiments:** tune chunk size, overlap, top K, vector/keyword balance, and reranking. Inspect the last 20 runs from the current session.
 - **Learning guide:** explanations and production considerations for all twelve stages.
 
-Documents and configuration persist in browser local storage. Run history is session-only. Assets and fonts are bundled locally; application data is never sent to an external service. Exported run files include source content.
+Documents and configuration persist in browser local storage. Older built-in employee-handbook examples are replaced with astronomy guides on the next visit, while custom uploaded documents are preserved. Run history is session-only. Assets and fonts are bundled locally; application data is never sent to an external service. Exported run files include source content.
 
 ## What is simulated?
 
@@ -61,6 +61,8 @@ The walkthrough animation is illustrative; its duration is not a latency measure
 - `src/App.tsx`: playground, library, experiments, guide, and accessible dialogs.
 - `src/styles.css`: responsive design, graph layout, and reduced-motion support.
 - `src/engine.test.ts`: algorithm and grounding checks.
+- `src/knowledgeStorage.ts`: upgrade old demo samples while preserving custom documents.
+- `src/knowledgeStorage.test.ts`: sample migration and storage recovery checks.
 - `tests/app.spec.ts`: desktop/mobile journeys, document persistence, live-stage inspection, empty-state recovery, and export.
 
 Each cloud task already has an isolated checkout. Develop in the existing `/workspace/Learn-RAG` directory; no extra Git worktree is needed.

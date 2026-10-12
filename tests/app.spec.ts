@@ -15,10 +15,10 @@ test("desktop RAG journey, citations, controls, history, and reset", async ({
   );
   await page.screenshot({ path: "/tmp/rag-desktop.png", fullPage: true });
   await page
-    .getByRole("button", { name: "Office allowance", exact: true })
+    .getByRole("button", { name: "Choosing a telescope", exact: true })
     .click();
   await page.getByRole("button", { name: /Run simulation/ }).click();
-  await expect(page.locator(".answer-text")).toContainText("$1,000");
+  await expect(page.locator(".answer-text")).toContainText("diameter");
   await page
     .getByRole("button", { name: "View source 1", exact: true })
     .first()
@@ -45,7 +45,7 @@ test("desktop RAG journey, citations, controls, history, and reset", async ({
   await page.getByRole("button", { name: "Experiments", exact: true }).click();
   await expect(page.locator(".history-card")).toHaveCount(2);
   await page.locator(".history-card").last().click();
-  await expect(page.locator(".answer-text")).toContainText("$1,000");
+  await expect(page.locator(".answer-text")).toContainText("diameter");
   await page.getByRole("button", { name: "Reset simulation" }).click();
   await expect(
     page.getByRole("heading", { name: "Your next aha moment starts here." }),
@@ -61,15 +61,13 @@ test("knowledge upload, custom retrieval, persistence, and deletion", async ({
   await page.getByRole("button", { name: "Add document", exact: true }).click();
   await page.getByRole("button", { name: "Add to knowledge base" }).click();
   await expect(page.getByRole("alert")).toContainText("Add a document title");
-  await page
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "Aurora facts.md",
-      mimeType: "text/markdown",
-      buffer: Buffer.from(
-        "The Aurora telescope costs $849 and includes a two-year warranty. Every Aurora telescope ships with a protective travel case.",
-      ),
-    });
+  await page.locator("input[type=file]").setInputFiles({
+    name: "Aurora facts.md",
+    mimeType: "text/markdown",
+    buffer: Buffer.from(
+      "The Aurora telescope costs $849 and includes a two-year warranty. Every Aurora telescope ships with a protective travel case.",
+    ),
+  });
   await expect(page.getByLabel("Document title")).toHaveValue("Aurora facts");
   await page.getByRole("button", { name: "Add to knowledge base" }).click();
   await expect(page.locator(".document-card")).toHaveCount(5);
@@ -154,13 +152,13 @@ test("every pipeline stage exposes inspectable live data", async ({ page }) => {
     await page.getByRole("button", { name: "Inspect live data" }).click();
     await expect(page.getByRole("dialog")).toBeVisible();
     if (step === 3)
-      await expect(page.locator(".chunk-preview>div")).toHaveCount(13);
+      await expect(page.locator(".chunk-preview>div")).toHaveCount(21);
     if (step === 4)
-      await expect(page.locator(".embedding-map>div")).toHaveCount(13);
+      await expect(page.locator(".embedding-map>div")).toHaveCount(21);
     if (step === 5)
-      await expect(page.locator(".data-table tbody tr")).toHaveCount(13);
+      await expect(page.locator(".data-table tbody tr")).toHaveCount(21);
     if (step === 6)
-      await expect(page.locator(".token-chips")).toContainText("remote");
+      await expect(page.locator(".token-chips")).toContainText("moon");
     if (step === 10)
       await expect(page.locator(".prompt-code")).toContainText("SYSTEM");
     if (step === 12)
@@ -190,5 +188,84 @@ test("unknown questions abstain and a run exports with source metadata", async (
   const result = JSON.parse(Buffer.concat(buffers).toString());
   expect(result.query).toBe("zygomorphic quasars");
   expect(result.grounded).toBe(false);
-  expect(result.chunks.length).toBe(13);
+  expect(result.chunks.length).toBe(21);
+});
+
+test("returning visitors see astronomy samples while custom uploads survive", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    // Seed the old release only once; a reload must use the migrated storage.
+    if (localStorage.getItem("migration-test-seeded")) return;
+    localStorage.setItem("migration-test-seeded", "yes");
+    localStorage.setItem(
+      "rag-documents",
+      JSON.stringify([
+        {
+          id: "remote",
+          title: "Remote work handbook",
+          category: "People & culture",
+          text: "Old sample content",
+        },
+        {
+          id: "benefits",
+          title: "Benefits & wellbeing",
+          category: "People & culture",
+          text: "Old sample content",
+        },
+        {
+          id: "onboarding",
+          title: "Your first 30 days",
+          category: "Getting started",
+          text: "Old sample content",
+        },
+        {
+          id: "security",
+          title: "Security essentials",
+          category: "IT & security",
+          text: "Old sample content",
+        },
+        {
+          id: "custom",
+          title: "My star catalog",
+          category: "Your documents",
+          text: "The imaginary example star called LyraX has a catalog number of 742.",
+        },
+      ]),
+    );
+  });
+  await page.goto("/");
+  await expect(
+    page.getByRole("textbox", { name: "Your question" }),
+  ).toHaveValue("Why does the Moon appear to change shape?");
+  await expect(
+    page.getByRole("button", { name: "Moon phases", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: /Knowledge base/ }).click();
+  await expect(page.locator(".document-card")).toHaveCount(5);
+  await expect(
+    page.getByRole("heading", { name: "The Moon and its phases" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "My star catalog" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Remote work handbook" }),
+  ).toHaveCount(0);
+  await page.reload();
+  await page.getByRole("button", { name: /Knowledge base/ }).click();
+  await expect(page.locator(".document-card")).toHaveCount(5);
+  const saved = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("rag-documents") || "[]"),
+  );
+  expect(saved.map((d: { id: string }) => d.id)).toEqual([
+    "solar-system",
+    "moon",
+    "telescopes",
+    "stargazing",
+    "custom",
+  ]);
+  await page.getByRole("button", { name: "Playground", exact: true }).click();
+  await page.getByRole("button", { name: /Run simulation/ }).click();
+  await expect(page.locator(".answer-text")).toContainText("sunlit half");
 });

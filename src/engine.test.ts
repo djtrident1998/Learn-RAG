@@ -54,23 +54,19 @@ describe("document preparation", () => {
 });
 describe("embeddings and retrieval", () => {
   it("creates deterministic, normalized vectors and handles empty queries", () => {
-    expect(embed("remote employees")).toEqual(embed("remote employees"));
-    expect(
-      cosine(embed("remote employees"), embed("remote employees")),
-    ).toBeCloseTo(1);
+    expect(embed("lunar phases")).toEqual(embed("lunar phases"));
+    expect(cosine(embed("lunar phases"), embed("lunar phases"))).toBeCloseTo(1);
     expect(embed("")).toEqual(new Array(96).fill(0));
-    expect(
-      cosine(embed("staff remotely"), embed("employees remote")),
-    ).toBeCloseTo(1);
+    expect(cosine(embed("moon phase"), embed("lunar phases"))).toBeCloseTo(1);
   });
-  it("retrieves the home-office allowance and cites actual source passages", () => {
+  it("retrieves telescope aperture information and cites actual source passages", () => {
     const run = simulate(
       demoDocuments,
-      "What is the home office allowance?",
+      "What does a telescope's aperture tell us?",
       defaultConfig,
     );
-    expect(run.ranked[0].documentId).toBe("remote");
-    expect(run.answer).toContain("$1,000");
+    expect(run.ranked[0].documentId).toBe("telescopes");
+    expect(run.answer).toContain("diameter");
     expect(run.grounded).toBe(true);
     expect(run.ranked).toHaveLength(3);
     for (const paragraph of run.answer.split("\n\n")) {
@@ -80,6 +76,17 @@ describe("embeddings and retrieval", () => {
         paragraph.replace(/ \[\d+\]$/, ""),
       );
     }
+  });
+  it("keeps decimal measurements intact when extracting source sentences", () => {
+    const text =
+      "Earth's axis tilts 23.4 degrees, and its orbit takes about 365.25 days.";
+    const run = simulate(
+      [{ id: "facts", title: "Earth facts", category: "Astronomy", text }],
+      "How many degrees does Earth's axis tilt?",
+      defaultConfig,
+    );
+    expect(run.answer).toContain(text);
+    expect(run.answer).toContain("[1]");
   });
   it("uses newly supplied knowledge without external services", () => {
     const run = simulate(
@@ -98,7 +105,7 @@ describe("embeddings and retrieval", () => {
     expect(run.citations[0].title).toBe("Product guide");
   });
   it("keeps initial order when reranking is disabled and obeys top K", () => {
-    const run = simulate(demoDocuments, "remote employees", {
+    const run = simulate(demoDocuments, "lunar phases", {
       ...defaultConfig,
       rerank: false,
       topK: 2,
@@ -114,7 +121,7 @@ describe("embeddings and retrieval", () => {
   });
   it("handles empty knowledge and stopword-only queries", () => {
     for (const run of [
-      simulate([], "What is remote work?", defaultConfig),
+      simulate([], "What causes Moon phases?", defaultConfig),
       simulate(demoDocuments, "the and is", defaultConfig),
     ]) {
       expect(run.grounded).toBe(false);
@@ -125,7 +132,7 @@ describe("embeddings and retrieval", () => {
   it("assembles a grounded prompt with exact numbered passages", () => {
     const run = simulate(
       demoDocuments,
-      "What security training is required?",
+      "What causes the seasons on Earth?",
       defaultConfig,
     );
     expect(run.prompt).toContain(
