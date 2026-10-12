@@ -524,10 +524,12 @@ function App() {
             <ShieldCheck size={14} />
           </div>
           <div className="profile">
-            <div className="avatar">Y</div>
+            <div className="avatar" aria-hidden="true">
+              DR
+            </div>
             <div>
-              <strong>Your learning space</strong>
-              <span>Make knowledge click.</span>
+              <span>Created by</span>
+              <strong>Dibyajyoti Ray</strong>
             </div>
           </div>
         </div>
@@ -566,7 +568,9 @@ function App() {
             >
               <CircleHelp size={19} />
             </button>
-            <span className="top-avatar">Y</span>
+            <span className="top-avatar" title="Created by Dibyajyoti Ray">
+              DR
+            </span>
           </div>
         </header>
         <main>
@@ -1724,6 +1728,9 @@ function App() {
               </div>
             </>
           )}
+          <footer className="creator-credit">
+            Created by <strong>Dibyajyoti Ray</strong>
+          </footer>
         </main>
       </div>
       {inspecting && stageRun && (
