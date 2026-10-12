@@ -45,12 +45,20 @@ Click any pipeline stage for its explanation, input/output contract, and **Inspe
 
 ## Explore
 
-- **Playground:** run questions, follow the animation, inspect answers, retrieved passages, prompts, and the execution trace; copy answers and prompts or export the complete run as JSON.
-- **Knowledge base:** add, inspect, and remove documents; preview chunks and vectors; restore missing sample documents without deleting custom ones.
+- **Playground:** run questions at your chosen pace, pause/resume or advance one step, inspect answers, retrieved passages, prompts, and the execution trace; copy answers and prompts or export the complete run as JSON.
+- **Knowledge base:** add, edit, inspect, and remove documents; preview chunks and vectors; restore missing sample documents without deleting custom ones.
 - **Experiments:** tune chunk size, overlap, top K, vector/keyword balance, and reranking. Inspect the last 20 runs from the current session.
 - **Learning guide:** explanations and production considerations for all twelve stages.
 
-Documents and configuration persist in browser local storage. Older built-in workplace and astronomy examples are replaced with loan-policy guides on the next visit, while custom uploaded documents are preserved. Run history is session-only. Assets and fonts are bundled locally; application data is never sent to an external service. Exported run files include source content.
+Documents, edits, configuration, and animation speed persist in browser local storage. Editing keeps the source ID and updates its chunks and vectors automatically; run the question again to refresh an earlier answer. Older built-in workplace and astronomy examples are replaced with loan-policy guides on the next visit, while custom uploaded documents are preserved. Run history is session-only. Assets and fonts are bundled locally; application data is never sent to an external service. Exported run files include source content.
+
+## Recording a walkthrough
+
+The default **Presentation** pace holds each of the 12 steps for **2 seconds**, for a roughly 24-second walkthrough. **Walkthrough** uses 1 second per step, and **Quick** uses 0.25 seconds per step. Choose the pace with **Animation speed** above the graph; it can be changed before or during a run.
+
+Click **Pause** to hold a step while explaining it, **Resume** to continue, or **Next step** to advance once and remain paused. **Reset simulation** cancels the current walkthrough. Expanding the pipeline gives more space for a recording. The pace controls the visual explanation only; it does not add delay to the underlying retrieval computation. Each run captures the question, configuration, and source content when it starts; edits apply to the next run.
+
+Use **Manage documents** from the playground or open **Knowledge base**. Each source has an **Edit** pencil button, and its inspection dialog also has **Edit document**. Change the title and text or upload a replacement `.txt` / `.md` file, then **Save document changes**. **Add document** opens a fresh editor for a new source. These browser changes are local to your browser, not uploaded to GitHub or shared with other visitors.
 
 ## What is simulated?
 

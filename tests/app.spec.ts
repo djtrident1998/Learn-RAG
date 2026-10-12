@@ -1,4 +1,12 @@
 import { test, expect } from "@playwright/test";
+// Most functional journeys use the selectable quick pace. Playback-specific tests
+// below validate the slower default and its real scheduler with a controlled clock.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    if (!localStorage.getItem("rag-playback-speed"))
+      localStorage.setItem("rag-playback-speed", JSON.stringify("quick"));
+  });
+});
 
 test("desktop RAG journey, citations, controls, history, and reset", async ({
   page,
@@ -337,4 +345,161 @@ test("loan questions switch products and compare fictional processing fees", asy
   for (const fee of ["0.5%", "1.5%", "0.25%"]) {
     await expect(page.locator(".answer-text")).toContainText(fee);
   }
+});
+
+test("edit a source, keep its identity, persist changes, and retrieve updated facts", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /Run simulation/ }).click();
+  await expect(page.locator(".answer-text")).toContainText(
+    "six months of business bank statements",
+  );
+  await page
+    .getByRole("button", { name: "Manage documents", exact: true })
+    .click();
+  await page
+    .getByRole("button", {
+      name: "Edit Home loans: eligibility & documents",
+      exact: true,
+    })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveAttribute(
+    "aria-label",
+    "Edit your knowledge",
+  );
+  await expect(page.getByLabel("Document title")).toHaveValue(
+    "Home loans: eligibility & documents",
+  );
+  await page.getByLabel("Document title").fill("");
+  await page.getByRole("button", { name: "Save document changes" }).click();
+  await expect(page.getByRole("alert")).toContainText("Add a document title");
+  await page.getByLabel("Document title").fill("My revised home loan guide");
+  await page
+    .getByLabel("Source content")
+    .fill(
+      "For a self-employed home loan, the fictional updated policy requires seven months of business bank statements and proof of business registration. Identity and address proof are also required.",
+    );
+  await page.getByRole("button", { name: "Save document changes" }).click();
+  await expect(page.locator(".document-card")).toHaveCount(4);
+  await page.getByRole("button", { name: "Playground", exact: true }).click();
+  await expect(page.locator(".stale-banner")).toBeVisible();
+  await page.getByRole("button", { name: /Run simulation/ }).click();
+  await expect(page.locator(".answer-text")).toContainText("seven months");
+  await expect(page.locator(".answer-text")).not.toContainText("six months");
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Manage documents", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "My revised home loan guide" }),
+  ).toBeVisible();
+  const saved = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("rag-documents") || "[]"),
+  );
+  expect(saved[0].id).toBe("home-loan");
+  expect(saved[0].category).toBe("Example Bank · Home loans");
+  expect(saved[0].text).toContain("seven months");
+  await page
+    .locator(".document-card")
+    .filter({ hasText: "My revised home loan guide" })
+    .getByRole("button", { name: "Inspect", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Edit document", exact: true })
+    .click();
+  await page.getByLabel("Document title").fill("Unsaved name");
+  await page.getByRole("button", { name: "Close dialog" }).click();
+  await expect(
+    page.getByRole("heading", { name: "My revised home loan guide" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Add document", exact: true }).click();
+  await expect(page.getByLabel("Document title")).toHaveValue("");
+  await expect(page.getByLabel("Source content")).toHaveValue("");
+});
+
+test("presentation pace holds each step, supports pause, speed changes, and cancellation", async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.removeItem("rag-playback-speed"));
+  const time = new Date("2026-10-12T08:00:00Z");
+  await page.clock.install({ time });
+  await page.clock.pauseAt(new Date(time.getTime() + 1000));
+  await page.goto("/");
+  await expect(page.getByLabel("Animation speed")).toHaveValue("presentation");
+  await page.getByRole("button", { name: /Run simulation/ }).click();
+  await expect(page.locator(".playback-step-name")).toHaveText(
+    "Load documents",
+  );
+  await page.clock.runFor(1999);
+  await expect(page.locator(".playback-step-name")).toHaveText(
+    "Load documents",
+  );
+  await page.clock.runFor(1);
+  await expect(page.locator(".playback-step-name")).toHaveText("Parse & clean");
+  await page
+    .getByRole("button", { name: "Pause simulation", exact: true })
+    .click();
+  await page.clock.runFor(8000);
+  await expect(page.locator(".playback-step-name")).toHaveText("Parse & clean");
+  await page.getByRole("button", { name: "Next pipeline step" }).click();
+  await expect(page.locator(".playback-step-name")).toHaveText(
+    "Split into chunks",
+  );
+  await page.getByLabel("Animation speed").selectOption("quick");
+  await page.clock.runFor(1000);
+  await expect(page.locator(".playback-step-name")).toHaveText(
+    "Split into chunks",
+  );
+  await page
+    .getByRole("button", { name: "Resume simulation", exact: true })
+    .click();
+  await page.clock.runFor(250);
+  await expect(page.locator(".playback-step-name")).toHaveText(
+    "Create embeddings",
+  );
+  await page.getByRole("button", { name: "Reset simulation" }).click();
+  await page.clock.runFor(30000);
+  await expect(page.locator(".playback-step-name")).toHaveText(
+    "Ready for your walkthrough",
+  );
+  await expect(page.locator(".answer-text")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Pause simulation", exact: true }),
+  ).toBeDisabled();
+});
+
+test("manual steps complete one captured run and save the selected pace", async ({
+  page,
+}) => {
+  const time = new Date("2026-10-12T08:00:00Z");
+  await page.clock.install({ time });
+  await page.clock.pauseAt(new Date(time.getTime() + 1000));
+  await page.goto("/");
+  await page.getByLabel("Animation speed").selectOption("walkthrough");
+  await page.getByRole("button", { name: /Run simulation/ }).click();
+  await page
+    .getByRole("button", { name: "Pause simulation", exact: true })
+    .click();
+  // The current run keeps its initial question even if the input changes.
+  await page
+    .getByRole("textbox", { name: "Your question" })
+    .fill("What documents are required for an education loan?");
+  for (let step = 0; step < 12; step++)
+    await page.getByRole("button", { name: "Next pipeline step" }).click();
+  await expect(page.locator(".answer-text")).toContainText(
+    "business financial statements",
+  );
+  await expect(page.locator(".stale-banner")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Next pipeline step" }),
+  ).toBeDisabled();
+  await page.clock.runFor(10000);
+  await page.getByRole("button", { name: "Experiments", exact: true }).click();
+  await expect(page.locator(".history-card")).toHaveCount(1);
+  await expect(page.locator(".history-card")).toContainText(
+    "I’m self-employed",
+  );
+  await page.reload();
+  await expect(page.getByLabel("Animation speed")).toHaveValue("walkthrough");
 });
