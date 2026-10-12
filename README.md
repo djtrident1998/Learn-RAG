@@ -1,5 +1,7 @@
 # RAG Studio
 
+Created by **Dibyajyoti Ray**.
+
 A complete, interactive RAG simulator for learning how documents become grounded answers. Built with React, TypeScript, and Vite, with a responsive lavender interface, an animated pipeline, and inspectable data at every step.
 
 ## Start

@@ -4815,3 +4815,20 @@ input[type="range"]::-moz-range-thumb {
     transition: none;
   }
 }
+
+.creator-credit {
+  margin-top: 20px;
+  padding: 15px 0 5px;
+  border-top: 1px solid #e9e3f0;
+  text-align: center;
+  font-size: 11px;
+  color: #9482a4;
+  letter-spacing: 0.1px;
+}
+.creator-credit strong {
+  font-weight: 600;
+  color: #806198;
+}
+.profile strong {
+  margin-top: 5px;
+}
