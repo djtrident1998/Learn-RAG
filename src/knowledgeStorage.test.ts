@@ -71,3 +71,54 @@ describe("upgrading saved knowledge", () => {
     },
   );
 });
+
+const astronomy: KnowledgeDocument[] = [
+  {
+    id: "solar-system",
+    title: "A tour of the solar system",
+    category: "Space & planets",
+    text: "Old astronomy sample",
+  },
+  {
+    id: "moon",
+    title: "The Moon and its phases",
+    category: "Our cosmic neighbor",
+    text: "Old astronomy sample",
+  },
+  {
+    id: "telescopes",
+    title: "Telescopes and binoculars",
+    category: "Tools for exploring",
+    text: "Old astronomy sample",
+  },
+  {
+    id: "stargazing",
+    title: "Your first night stargazing",
+    category: "Hands-on discovery",
+    text: "Old astronomy sample",
+  },
+];
+describe("upgrading the astronomy release", () => {
+  it("maps the previous guides to loan policies without losing uploads", () => {
+    expect(migrateKnowledgeDocuments([...astronomy, custom])).toEqual([
+      ...demoDocuments,
+      custom,
+    ]);
+  });
+  it("deduplicates mixed generations of bundled samples", () => {
+    expect(
+      migrateKnowledgeDocuments([
+        ...legacy,
+        ...astronomy,
+        ...demoDocuments,
+        custom,
+      ]),
+    ).toEqual([...demoDocuments, custom]);
+  });
+  it("preserves deliberate deletions from the astronomy library", () => {
+    expect(migrateKnowledgeDocuments([astronomy[2], custom])).toEqual([
+      demoDocuments[2],
+      custom,
+    ]);
+  });
+});

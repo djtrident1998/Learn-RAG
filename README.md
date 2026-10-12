@@ -22,9 +22,13 @@ npm run test:e2e   # Desktop, mobile, and saved-document migration tests
 
 Browser tests use `/usr/bin/chromium` by default. Set `CHROMIUM_PATH` to the executable location if Chromium is installed elsewhere. Playwright starts Vite automatically when needed.
 
+## Loan eligibility & policies
+
+The opening question is **“I’m self-employed. What documents would I need for a home loan?”** The examples cover product-specific eligibility checks, salaried and self-employed income documents, property and admission records, co-applicants, and processing fees. Example Bank and all thresholds, age limits, fees, and moratorium terms are fictional teaching policies. They are not live lender terms, jurisdiction-specific rules, personalized advice, or a loan approval. The app does not collect applications or make underwriting decisions.
+
 ## The complete workflow
 
-1. **Load documents** — use four included astronomy guides covering the solar system, the Moon, telescopes, and stargazing, paste your own text, or import `.txt` / `.md` files up to 200 KB.
+1. **Load documents** — use four fictional Example Bank guides covering home loans, personal loans, education loans, and fees and application documents, paste your own text, or import `.txt` / `.md` files up to 200 KB.
 2. **Parse and clean** — normalize text and strip basic Markdown and HTML formatting.
 3. **Chunk** — split documents into overlapping word windows. Tune size and overlap to explore context tradeoffs.
 4. **Embed** — inspect 96-dimensional deterministic vectors and their heatmap.
@@ -46,11 +50,11 @@ Click any pipeline stage for its explanation, input/output contract, and **Inspe
 - **Experiments:** tune chunk size, overlap, top K, vector/keyword balance, and reranking. Inspect the last 20 runs from the current session.
 - **Learning guide:** explanations and production considerations for all twelve stages.
 
-Documents and configuration persist in browser local storage. Older built-in employee-handbook examples are replaced with astronomy guides on the next visit, while custom uploaded documents are preserved. Run history is session-only. Assets and fonts are bundled locally; application data is never sent to an external service. Exported run files include source content.
+Documents and configuration persist in browser local storage. Older built-in workplace and astronomy examples are replaced with loan-policy guides on the next visit, while custom uploaded documents are preserved. Run history is session-only. Assets and fonts are bundled locally; application data is never sent to an external service. Exported run files include source content.
 
 ## What is simulated?
 
-Parsing, chunking, BM25 scoring, cosine similarity, candidate selection, context construction, and source citations run locally. The embedding is a normalized feature hash with a small synonym map, **not a trained neural embedding model**. Reranking uses a transparent heuristic, **not a cross-encoder**. Generation selects source sentences, **not an LLM**. Chunk limits count whitespace-separated words, not model tokens.
+Parsing, chunking, BM25 scoring, cosine similarity, candidate selection, context construction, and source citations run locally. The embedding is a normalized feature hash with a small synonym map, **not a trained neural embedding model**. Reranking uses a transparent heuristic, **not a cross-encoder**. Generation selects complete source sentences, **not an LLM**. For questions naming one loan product, statements explicitly about another product are omitted from the answer; retrieved candidates remain visible for inspection. Chunk limits count whitespace-separated words, not model tokens.
 
 The walkthrough animation is illustrative; its duration is not a latency measurement. The reported compute time measures local computation. Query-term coverage is an overlap signal, not an accuracy or faithfulness score. Hash collisions, missing synonyms, fragmented chunks, conflicting sources, and ambiguous questions can produce imperfect retrieval or incomplete answers—inspect the evidence rather than treating the scores as guarantees.
 

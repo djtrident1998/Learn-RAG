@@ -146,7 +146,7 @@ export const stages = [
     subtitle: "Turn evidence into a response",
     color: "green",
     concept:
-      "A production LLM reads the augmented prompt and generates an answer. Here, an extractive generator selects relevant source sentences and attaches citations.",
+      "A production LLM reads the augmented prompt and generates an answer. Here, an extractive generator selects complete source sentences with citations and excludes statements explicitly about a different loan product when the question names just one.",
     why: "Generation makes retrieved information easy to consume. Every important claim should be supported by a source the user can inspect.",
     input: "Augmented prompt",
     output: "Evidence-based answer + citations",
@@ -169,13 +169,14 @@ export const stages = [
   },
 ] as const;
 export const sampleQuestions = [
-  "Why does the Moon appear to change shape?",
-  "What does a telescope's aperture tell us?",
-  "How should I prepare for my first night stargazing?",
-  "What causes the seasons on Earth?",
+  "I’m self-employed. What documents would I need for a home loan?",
+  "What are the eligibility criteria for a personal loan?",
+  "What documents are required for an education loan?",
+  "How do processing fees differ across home, personal, and education loans?",
 ];
 export const sampleQuestionLabels = [
-  "Moon phases",
-  "Choosing a telescope",
-  "First night stargazing",
+  "Self-employed home loan",
+  "Personal loan eligibility",
+  "Education loan documents",
+  "Compare processing fees",
 ];

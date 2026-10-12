@@ -516,13 +516,14 @@ function App() {
               <div className="page-heading">
                 <div>
                   <div className="eyebrow">
-                    <span /> UNDERSTAND THE MAGIC
+                    <span /> LOAN ELIGIBILITY & POLICIES
                   </div>
                   <h1>
                     From knowledge to answers<span>.</span>
                   </h1>
                   <p>
-                    Explore retrieval-augmented generation, one step at a time.
+                    Explore eligibility, fees, and required documents, one RAG
+                    step at a time.
                   </p>
                 </div>
                 <button className="secondary" onClick={() => setSettings(true)}>
@@ -538,8 +539,8 @@ function App() {
                     <div>
                       <h2>It starts with a question</h2>
                       <p>
-                        Ask your knowledge base anything. Watch the pipeline do
-                        its thing.
+                        Ask the fictional lender’s guides. See exactly where
+                        each answer comes from.
                       </p>
                     </div>
                   </div>
@@ -552,7 +553,7 @@ function App() {
                   <textarea
                     ref={queryRef}
                     aria-label="Your question"
-                    rows={1}
+                    rows={2}
                     value={query}
                     maxLength={1000}
                     placeholder="What would you like to know?"
@@ -580,6 +581,11 @@ function App() {
                     {!running && <span>⌘ ↵</span>}
                   </button>
                 </div>
+                <p className="loan-demo-note">
+                  <ShieldCheck size={13} /> Example Bank is fictional. These
+                  policies illustrate RAG; they are not live lender terms or an
+                  eligibility decision.
+                </p>
                 <div className="query-suggestions">
                   <span>TRY A QUESTION</span>
                   {sampleQuestionLabels.map((label, i) => (
@@ -1317,7 +1323,7 @@ function App() {
                 <div>
                   <strong>Try changing the source of truth.</strong>
                   <p>
-                    Add a document about a new space topic, then ask about it in
+                    Add a document about a new loan policy, then ask about it in
                     the playground. Watch how the evidence changes the answer.
                   </p>
                 </div>
@@ -1881,7 +1887,7 @@ function App() {
             className="form-input"
             value={title}
             maxLength={120}
-            placeholder="e.g. The rings of Saturn"
+            placeholder="e.g. Home loan document checklist"
             onChange={(e) => setTitle(e.target.value)}
           />
           <label className="form-label" htmlFor="document-body">

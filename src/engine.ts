@@ -48,93 +48,106 @@ export const defaultConfig: Config = {
   semanticWeight: 0.65,
   rerank: true,
 };
+// Fictional lender policies for teaching retrieval; these are not live bank terms.
 export const demoDocuments: KnowledgeDocument[] = [
   {
-    id: "solar-system",
-    title: "A tour of the solar system",
-    category: "Space & planets",
-    text: `The solar system contains the Sun, eight planets, their moons, dwarf planets, asteroids, and comets. The Sun is a star, and its gravity keeps these objects in orbit. The eight planets, in order from the Sun, are Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune.
+    id: "home-loan",
+    title: "Home loans: eligibility & documents",
+    category: "Example Bank · Home loans",
+    text: `For a self-employed home loan, Example Bank's fictional policy asks for identity proof, address proof, and business registration documents. Self-employed home loan income documents include two years of tax returns, two years of business financial statements, and six months of business bank statements. Home loan property documents include the sale agreement, title records, and the approved building plan.
 
-Mercury is the closest planet to the Sun, while Jupiter is the largest planet in the solar system. Mercury, Venus, Earth, and Mars are rocky terrestrial planets with solid surfaces. Jupiter and Saturn are gas giants; Uranus and Neptune are ice giants. Pluto is classified as a dwarf planet.
+Home loan applicants must be at least 21 when applying and no older than 65 at the planned loan maturity. Self-employed applicants need at least two years of business history and documented, consistent income. Salaried applicants submit their latest three salary slips, six months of salary-account statements, and employment proof.
 
-A planet's rotation is its spin around its axis, which determines the length of its day. A planet's revolution is its journey around the Sun, which determines the length of its year. Earth takes about 24 hours to rotate and about 365.25 days to orbit the Sun.
+In this fictional home loan policy, total monthly debt payments, including the proposed installment, must not exceed 45% of verified monthly income. Example Bank also reviews the applicant's credit report, existing loans, property valuation, and legal title. Meeting the sample eligibility criteria does not guarantee approval.
 
-Earth's seasons are caused by the tilt of its axis, about 23.4 degrees, as it orbits the Sun. They are not caused by Earth moving much closer to or farther from the Sun. When a hemisphere tilts toward the Sun, it receives more direct sunlight and longer days.
+The fictional home loan amount is limited to 80% of the lower of the purchase price or assessed property value. The applicant supplies the remaining contribution and evidence of its source. A co-applicant may be considered, but their identity, income, and existing liabilities must also be documented.
 
-Planets shine mainly by reflecting sunlight, while stars produce their own light. Most asteroids orbit in a belt between Mars and Jupiter. Comets contain ice and dust; when a comet approaches the Sun, heating can create a glowing coma and tails.`,
+Home loan processing charges and third-party costs are described in Fees & application checklist. The bank may request clarifications, updated statements, or additional property records during verification. These requirements belong to an invented teaching example, not an actual lender or jurisdiction.`,
   },
   {
-    id: "moon",
-    title: "The Moon and its phases",
-    category: "Our cosmic neighbor",
-    text: `The Moon appears to change shape because, as it orbits Earth, we see different portions of its sunlit half. The Moon reflects sunlight rather than making its own light. These changing views are called lunar phases. The Moon's actual shape does not change during a phase cycle.
+    id: "personal-loan",
+    title: "Personal loans: eligibility & repayment",
+    category: "Example Bank · Personal loans",
+    text: `Personal loan eligibility criteria in Example Bank's fictional policy require applicants to be at least 21 at application and the loan to end by age 60. Personal loan applicants need documented, consistent income and a satisfactory review of their credit report and existing repayments. This example defines no universal credit-score cutoff or guaranteed approval.
 
-The lunar phase cycle lasts about 29.5 days, from one new moon to the next. The main phases are new moon, waxing crescent, first quarter, waxing gibbous, full moon, waning gibbous, last quarter, and waning crescent. Waxing means the illuminated portion we see is growing; waning means it is shrinking.
+Salaried personal loan applicants provide identity proof, address proof, their latest three salary slips, six months of salary-account statements, and current employment proof. The sample policy requires at least six months with the current employer. A salary shown on a statement alone does not establish eligibility.
 
-At new moon, the Moon is near the Sun's direction in our sky, and its sunlit side faces mostly away from Earth. At full moon, Earth is between the Sun and Moon, and we see most of the illuminated side. A quarter moon appears half illuminated, despite its name.
+Self-employed personal loan applicants provide business registration evidence, two years of tax returns, two years of business financial statements, and six months of business bank statements. They need at least two years of business history. The bank checks whether the documented income can support the proposed repayments.
 
-Ordinary Moon phases are not caused by Earth's shadow. A lunar eclipse happens when Earth casts its shadow on the Moon near full moon. A solar eclipse happens when the Moon passes between Earth and the Sun near new moon. Eclipses do not happen every month because the Moon's orbit is tilted relative to Earth's orbital plane.
+For the fictional personal loan, existing monthly debt payments plus the proposed installment must not exceed 40% of verified monthly income. Repayment terms range from 12 to 60 months. This is an unsecured sample product, so property collateral is not required; the lender still verifies identity, income, and repayment ability.
 
-The Moon's gravity is the main driver of ocean tides, with the Sun also contributing. Observers can often see lunar craters with binoculars. The boundary between lunar day and night, called the terminator, makes surface shadows especially noticeable.`,
+The personal loan processing fee is listed in Fees & application checklist. This guide does not specify a live interest rate, late-payment charge, or early-repayment charge. Those terms must be confirmed in the lender's written offer. An incomplete application can be held for clarification rather than automatically approved or rejected.`,
   },
   {
-    id: "telescopes",
-    title: "Telescopes and binoculars",
-    category: "Tools for exploring",
-    text: `A telescope's aperture is the diameter of its main light-collecting lens or mirror. A larger aperture gathers more light and can resolve finer details, although atmospheric turbulence also limits what you can see. Aperture is a more useful starting point for choosing a telescope than advertised magnification alone.
+    id: "education-loan",
+    title: "Education loans: admission & co-applicants",
+    category: "Example Bank · Education loans",
+    text: `Education loan documents required by Example Bank's fictional policy include an admission letter, the institution's fee schedule, academic records, and identity and address proof. The student and co-applicant must submit a completed application. Education loan co-applicants supply income proof, bank statements, and details of existing loans.
 
-Refracting telescopes use lenses to focus light. Reflecting telescopes use mirrors. A Dobsonian telescope is a reflector on a simple, stable mount and is a popular choice for beginners who want to explore the Moon and planets. A portable telescope that is easy to set up may get used more often than a large, complicated instrument.
+Student borrowers must be at least 18 at application in this sample policy and have confirmed admission to an eligible recognized course. Example Bank reviews the institution, course duration, expense estimate, and co-applicant's repayment ability. Admission by itself does not guarantee an education loan.
 
-Magnification equals the telescope's focal length divided by the eyepiece's focal length. A telescope with a focal length of 900 mm and a 10 mm eyepiece produces 90 times magnification. Higher magnification creates a narrower field of view and can make the image dimmer or reveal atmospheric blur.
+A salaried co-applicant submits three recent salary slips, six months of salary-account statements, and employment proof. A self-employed co-applicant submits two years of tax returns, two years of business financial statements, six months of business bank statements, and business registration evidence where applicable.
 
-Binoculars are a useful first tool for stargazing because they are portable and show a wide field of view. In a binocular specification such as 10x50, the first number is magnification and the second is the objective lens diameter in millimeters. A steady tripod or mount makes prolonged viewing easier.
+The fictional education loan can cover approved tuition, required books, equipment, and reasonable living expenses supported by an itemized estimate. Unrelated purchases are outside the sample policy. Whether security or collateral is required depends on the written offer; this guide deliberately defines no collateral amount threshold.
 
-A stable mount, appropriate eyepieces, and a dark observing location matter as much as the telescope itself. Never point binoculars or a telescope at the Sun without a correctly fitted, purpose-made solar filter on the front of the instrument.`,
+The sample repayment arrangement has a moratorium covering the course duration plus six months. A moratorium delays scheduled principal repayments; it does not mean interest is automatically waived. The actual interest treatment, repayment schedule, and co-applicant obligations must be explained in the written offer.
+
+Processing fees are summarized in Fees & application checklist. Additional institution verification, course details, or travel documentation may be requested. This is a fictional learning policy and is not a promise of funding or a statement of any country's regulations.`,
   },
   {
-    id: "stargazing",
-    title: "Your first night stargazing",
-    category: "Hands-on discovery",
-    text: `For your first night stargazing, choose a clear evening and an observing location with an open view of the sky. Move away from bright streetlights where possible. Check the weather and cloud cover before heading out. A sky map or astronomy app can help you identify visible stars and planets for your location and date.
+    id: "loan-fees",
+    title: "Fees & application checklist",
+    category: "Example Bank · Shared policies",
+    text: `Example Bank's fictional home loan processing fee is 0.5% of the approved amount; the personal loan fee is 1.5%; the education loan fee is 0.25%. These percentages are invented teaching examples, not current market rates. Applicable taxes and third-party costs are quoted separately before acceptance.
 
-Allow about 20 to 30 minutes for your eyes to adapt to darkness. Bright white light can interrupt that adaptation, so use a dim red flashlight when reading a map. Keep phone brightness low and avoid shining lights toward other observers. Dress warmly, since standing still outside can feel colder than expected.
+The home loan may also involve property valuation and legal-review costs. Personal loans have no property valuation charge in this sample because the example product is unsecured. Education loan third-party verification costs, if any, are itemized in the offer. This sample does not define fixed minimum or maximum processing fees.
 
-Start with the Moon if it is visible, then try bright planets or a recognizable constellation. Binoculars can reveal more stars than the unaided eye. The best targets change with the season, your latitude, the time of night, and local light pollution. You do not need an expensive telescope to begin exploring the night sky.
+For all three sample loans, begin with a completed application, identity proof, address proof, the requested amount, purpose, income evidence, and a declaration of existing financial obligations. Home loans also need property records. Education loans also need admission documents, an expense estimate, and co-applicant details.
 
-Constellations are named patterns and officially defined regions of the sky. The stars in a constellation can be very far apart in space, even when they appear close together from Earth. Orion is a recognizable example, with three bright stars forming its belt.
+Self-employed home loan income checks use tax returns, business financial statements, business bank statements, and registration evidence. Salaried income checks use salary slips, salary-account statements, and employment proof. Documents must be legible, current where required, and consistent with the applicant's declared information.
 
-Light pollution reduces the contrast of faint objects against the sky. A dark, moonless night is better for observing faint galaxies and nebulae, while the Moon and bright planets can still be rewarding from a city. Record the date, location, sky conditions, and what you observed in a simple notebook.`,
+Application review includes document verification, credit review, and product-specific checks. There is no guaranteed turnaround time or automatic approval in this example. Any missing information is requested through a documented clarification step. The written offer sets out the amount, interest terms, fees, repayment schedule, and conditions before acceptance.
+
+Refundability, late-payment charges, insurance costs, and early-repayment charges are not specified in this fictional corpus. Ask for the lender's current written terms instead of assuming that an unspecified charge is zero. The simulator illustrates policy retrieval; it does not make lending decisions.`,
   },
 ];
 const stopwords = new Set(
-  "a an the is are was were be been being to of in on for and or our your their from with how does do can what which at by it as this that all have has i my me we us about".split(
+  "a an the is are was were be been being to of in on for and or our your their from with how does do can what which at by it as this that all have has i my me we us about m would should could".split(
     " ",
   ),
 );
 const synonyms: Record<string, string> = {
-  planets: "planet",
-  worlds: "planet",
-  stars: "star",
-  stellar: "star",
-  lunar: "moon",
-  phases: "phase",
-  cycles: "cycle",
-  telescopes: "telescope",
-  scope: "telescope",
-  scopes: "telescope",
-  diameter: "aperture",
-  mirrors: "mirror",
-  lenses: "lens",
-  binoculars: "binocular",
-  stargazing: "observing",
-  beginners: "beginner",
-  novices: "beginner",
-  constellations: "constellation",
-  rotates: "rotation",
-  rotating: "rotation",
-  spin: "rotation",
-  orbits: "orbit",
-  orbiting: "orbit",
+  loans: "loan",
+  mortgage: "home",
+  mortgages: "home",
+  housing: "home",
+  documents: "document",
+  paperwork: "document",
+  records: "document",
+  fees: "fee",
+  charges: "fee",
+  costs: "fee",
+  applicants: "applicant",
+  borrowers: "applicant",
+  eligibility: "eligible",
+  criteria: "eligible",
+  required: "require",
+  requires: "require",
+  need: "require",
+  needed: "require",
+  statements: "statement",
+  returns: "return",
+  repayments: "repayment",
+  installments: "installment",
+  education: "education",
+  student: "education",
+  students: "education",
+  university: "institution",
+  college: "institution",
+  freelancer: "self",
+  freelancers: "self",
+  entrepreneur: "self",
+  entrepreneurs: "self",
   support: "help",
   supports: "help",
   supported: "help",
@@ -285,10 +298,33 @@ export function simulate(
     )
     .slice(0, config.topK);
   const queryTerms = new Set(terms.map(canonical));
+  // Keep an extractive answer's product scope explicit. Retrieval remains visible,
+  // including irrelevant candidates, but one product's rules must not imply another's.
+  const requestedProducts = ["home", "personal", "education"].filter(
+    (product) => queryTerms.has(product),
+  );
+  const singleLoanProduct =
+    queryTerms.has("loan") && requestedProducts.length === 1
+      ? requestedProducts[0]
+      : null;
+
+  // Answer with whole source sentences that are fully contained in the retrieved
+  // passage. Word-window boundaries must not turn a partial condition into a claim.
+  const sourceSentences = new Map(
+    documents.map((document) => [
+      document.id,
+      (
+        parseDocument(document.text)
+          .replace(/\s+/g, " ")
+          .match(/(?:[^.!?]|\.(?=\d))+(?:[.!?]+|$)/g) ?? []
+      ).map((text) => text.trim()),
+    ]),
+  );
   const sentences = ranked
     .flatMap((chunk, index) =>
-      (chunk.text.match(/(?:[^.!?]|\.(?=\d))+(?:[.!?]+|$)/g) ?? []).map(
-        (text) => {
+      (sourceSentences.get(chunk.documentId) ?? [])
+        .filter((text) => chunk.text.includes(text))
+        .map((text) => {
           const words = tokenize(text).map(canonical);
           const matches = words.filter((w) => queryTerms.has(w)).length;
           return {
@@ -297,10 +333,21 @@ export function simulate(
             relevance: matches / Math.sqrt(Math.max(words.length, 1)),
             matches,
           };
-        },
-      ),
+        }),
     )
-    .filter((s) => s.matches > 0 && s.text.split(" ").length >= 5);
+    .filter((s) => {
+      if (s.matches === 0 || s.text.split(" ").length < 5) return false;
+      if (!singleLoanProduct) return true;
+      const sentenceProducts = [
+        ...s.text
+          .toLowerCase()
+          .matchAll(/\b(home|personal|education)\s+loans?\b/g),
+      ].map((match) => match[1]);
+      return (
+        sentenceProducts.length === 0 ||
+        sentenceProducts.includes(singleLoanProduct)
+      );
+    });
   const selected: typeof sentences = [];
   const seen = new Set<string>();
   for (const sentence of sentences.sort((a, b) => b.relevance - a.relevance)) {
